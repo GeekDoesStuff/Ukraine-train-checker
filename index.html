@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HB Train Checker</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input[type="text"] { width: 100%; padding: 8px; margin: 8px 0; }
+    button { padding: 8px 16px; background: #5a7ec1; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .result { margin-top: 20px; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+
+<h2>HB Train Checker</h2>
+
+<label>Enter username to check:</label>
+<input type="text" id="usernameInput" placeholder="Enter SteamGifts username">
+<button id="checkBtn">Check</button>
+
+<div class="result" id="result"></div>
+
+<script>
+let validSet = new Set();
+
+function loadUserList() {
+  const url = 'valid_users.txt?t=' + Date.now(); // cache-buster
+  fetch(url)
+    .then(res => res.text())
+    .then(text => {
+      const lines = text.split('\n')
+        .map(v => v.trim().toLowerCase())
+        .filter(v => v);
+      validSet = new Set(lines);
+    })
+    .catch(err => {
+      console.error('Could not load valid_users.txt', err);
+      document.getElementById('result').textContent = 'Error loading user list.';
+    });
+}
+
+loadUserList();
+
+document.getElementById('checkBtn').addEventListener('click', () => {
+  const name = document.getElementById('usernameInput').value.trim();
+  if (!name) {
+    document.getElementById('result').textContent = 'Please enter a username.';
+    return;
+  }
+  const isValid = validSet.has(name.toLowerCase());
+  document.getElementById('result').textContent = isValid ? '✅ Valid' : '❌ Not valid';
+});
+</script>
+
+</body>
+</html>
